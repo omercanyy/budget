@@ -10,21 +10,28 @@ from libs.transaction import Transaction
 class BudgetV2:
     # transactions: List[Transaction]
     categories: List[Category]
-    uncategorized_category = Category
+    uncategorized = Category
+    deposits = Category
     is_bank_statements_imported: bool
 
     def __init__(self, category_dict: Dict[str, Union[List[str], Dict[str, List[str]]]]):
         self.categories = Category.get_category_list_from_dict(category_dict)
-        self.uncategorized_category = Category("Uncategorized", [])
+        self.uncategorized = Category("Uncategorized", [])
+        self.deposits = Category("Deposits", [])
 
-    def run(self, bank_inputs: List[BankStatementInput]):
+    def run(self, bank_inputs: List[BankStatementInput], save_to_file: bool = False):
         transactions = [
             transaction
             for bank_input in bank_inputs
             for transaction in BankStatement(bank_input).get_transactions()
         ]
         self.categorize_spending(transactions)
-        print(self.get_breakdown())
+        breakdown = self.get_breakdown()
+        if save_to_file:
+            with open('data/breakdown.csv', 'w') as f:
+                f.write(breakdown)
+        else:
+            print(breakdown)
 
     def categorize_spending(self, transactions: List[Transaction]):
         num_of_transaction = len(transactions)
@@ -33,12 +40,12 @@ class BudgetV2:
             transaction = transactions.pop(0)
 
             if not transaction.is_spending:
-                continue
+                self.deposits.add_spending(transaction)
 
             if matched_category := self.__find_matching_category(transaction):
                 matched_category.add_spending(transaction)
             else:
-                self.uncategorized_category.add_spending(transaction)
+                self.uncategorized.add_spending(transaction)
 
     def get_breakdown(self):
         break_down_str = []
@@ -81,15 +88,25 @@ class BudgetV2:
 
         if SETTINGS.SHOW_UNCATEGORIZED_SPENDINGS_AT_THE_END:
             break_down_str.append(self.show_uncategorized_spending())
+        
+        if SETTINGS.SHOW_DEPOSITS:
+            break_down_str.append(self.show_deposits_spending())
 
         return '\n'.join(break_down_str)
 
     def show_uncategorized_spending(self):
         uncategorized_spending = [
-            self.uncategorized_category.get_category_summary(),
-            self.__get_group_by_metric([self.uncategorized_category])
+            self.uncategorized.get_category_summary(),
+            self.__get_group_by_metric([self.uncategorized])
         ]
         return '\n'.join(uncategorized_spending)
+    
+    def show_deposits_spending(self):
+        deposits = [
+            self.deposits.get_category_summary(),
+            self.__get_group_by_metric([self.deposits])
+        ]
+        return '\n'.join(deposits)
 
     def __get_group_by_metric(self, categories: List[Category]):
         metrics = []

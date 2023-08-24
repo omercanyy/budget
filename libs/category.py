@@ -18,8 +18,7 @@ class Category:
         self.group_by = group_by.upper() if group_by else name.upper()
 
     def add_spending(self, transaction: Transaction) -> None:
-        if transaction.is_spending:
-            self.spendings.append(transaction)
+        self.spendings.append(transaction)
 
     def __repr__(self):
         category_header = self.__get_header()

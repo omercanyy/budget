@@ -54,6 +54,7 @@ class Settings:
     SHOW_CATEGORY_NAME: bool
     SHOW_CATEGORY_SUM: bool
     SHOW_UNCATEGORIZED_SPENDINGS_AT_THE_END: bool
+    SHOW_DEPOSITS: bool
     SHOW_EMPTY_CATEGORIES: bool
     LINE_LENGTH: int
     METRICS: List[Metric]
@@ -67,6 +68,7 @@ class Settings:
         self.SHOW_CATEGORY_NAME = False
         self.SHOW_CATEGORY_SUM = False
         self.SHOW_UNCATEGORIZED_SPENDINGS_AT_THE_END = False
+        self.SHOW_DEPOSITS = False
         self.SHOW_EMPTY_CATEGORIES = True
         self.LINE_LENGTH = 70
 
