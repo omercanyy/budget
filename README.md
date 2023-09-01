@@ -1,6 +1,6 @@
 # Budget
 
-Budget software helps you categorize your spendings.
+Budget software helps you categorize your spendings. You can customize categories in the rummer file.
 
 ## How to run
 ```
