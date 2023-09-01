@@ -1,6 +1,8 @@
 from libs.bank_statement import BankStatementInput
 from libs.budget_v2 import BudgetV2
 
+# All rights reserver by Omer Can
+
 
 if __name__ == '__main__':
     # Category keywords
